@@ -4,7 +4,7 @@ Pack Wizard is a Python tool that sends random beat packs via email. It selects 
 
 ## Instructions
 
-1. Install Requirements: `pip install python-dotenv`
+1. Install Requirements: `pip install -r requirements.txt`
 2. Setup .env:<br/>
    EMAIL_ADDRESS=<your-email@gmail.com><br/>
    PASSWORD=password <br/>
