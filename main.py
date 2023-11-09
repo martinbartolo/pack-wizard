@@ -43,6 +43,8 @@ def send_files(email_address: str, directory: str, num_files: int):
     msg["To"] = email_address
     msg["Subject"] = "beats"
 
+    # TODO: Support freezing files and refreshing the non-frozen files
+
     while True:
         # choose a new set of files
         chosen_files = random.sample(mp3_files, num_files)
@@ -59,10 +61,24 @@ def send_files(email_address: str, directory: str, num_files: int):
         if files_too_big:
             continue
 
-        # Add files to message
+        # Confirm that the user wants to send these files
         print("Files:")
         for file in chosen_files:
             print(file)
+        print(
+            f"\nSend these {num_files} beats to {email_address}? (y [send] / n [new beats])",
+            end=" ",
+        )
+        while True:
+            response = input().lower()
+            if response == "y" or response == "n":
+                break
+        if response == "n":
+            print("\n")
+            continue
+
+        # Add the files to the email
+        for file in chosen_files:
             part: MIMEBase = MIMEBase("application", "octet-stream")
             part.set_payload(open(os.path.join(directory, file), "rb").read())
             encoders.encode_base64(part)
@@ -70,17 +86,7 @@ def send_files(email_address: str, directory: str, num_files: int):
                 "Content-Disposition", f"attachment; filename={os.path.basename(file)}"
             )
             msg.attach(part)
-
-        # Confirm that the user wants to send these files
-        print(
-            f"\nSend these {num_files} beats to {email_address}? (y [send] / n [new beats])",
-            end=" ",
-        )
-        response = input()
-        if response == "y":
-            break
-        else:
-            print("\n")
+        break
 
     print("Sending email...")
     server: smtplib.SMTP = smtplib.SMTP("smtp.gmail.com", 587)
